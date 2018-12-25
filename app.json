@@ -19,11 +19,15 @@
     "updates": {
       "fallbackToCacheTimeout": 0
     },
+    "androidStatusBar": {
+      "backgroundColor": "#eeeeee"
+    },
     "assetBundlePatterns": [
       "**/*"
     ],
     "ios": {
       "supportsTablet": true
-    }
+    },
+    "description": ""
   }
 }
