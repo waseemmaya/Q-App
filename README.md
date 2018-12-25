@@ -11,6 +11,6 @@ Visit this link from mobile to open this project in Expo App (make sure you have
 
 https://expo.io/@waseemmayaa/Q-App
 
-https://github.com/waseemmaya/Q-App/blob/master/main/q-app.png
+
 
 
