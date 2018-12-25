@@ -1,3 +1,13 @@
+import { YellowBox } from "react-native";
+import _ from "lodash";
+
+YellowBox.ignoreWarnings(["Setting a timer"]);
+const _console = _.clone(console);
+console.warn = message => {
+  if (message.indexOf("Setting a timer") <= -1) {
+    _console.warn(message);
+  }
+};
 import React, { Component } from "react";
 
 import {
@@ -20,7 +30,8 @@ export default class Companies extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      arr: []
+      arr: [],
+      ref: fire.database().ref("Comapnies")
     };
   }
 
@@ -42,8 +53,7 @@ export default class Companies extends Component {
   }
 
   componentDidMount() {
-    const { arr } = this.state;
-    let ref = fire.database().ref("Comapnies");
+    const { arr, ref } = this.state;
     ref.on("child_added", snap => {
       arr.push({
         ...snap.val(),
@@ -55,6 +65,10 @@ export default class Companies extends Component {
       // console.log("snap===>", snap.val());
     });
   }
+
+  componentWillUnmount = () => {
+    this.state.ref.off();
+  };
 
   renderCompanies = () => {
     const { arr } = this.state;
