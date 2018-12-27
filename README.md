@@ -6,7 +6,7 @@ Note : For Iphone
 
 scan qr with camera
 
-![alt text](https://github.com/waseemmaya/Q-App/blob/master/main/q-app.png)
+![alt text](https://github.com/waseemmaya/Q-App/blob/master/assets/q-app.png)
 
 OR 
 
