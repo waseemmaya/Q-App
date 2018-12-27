@@ -1,7 +1,6 @@
 import React, { Component } from "react";
-import { View, Text } from "react-native";
 import { AppLoading } from "expo";
-import { MapView as Map, Marker } from "expo";
+import { MapView as Map } from "expo";
 
 export default class MapView extends Component {
   constructor(props) {
@@ -36,10 +35,6 @@ export default class MapView extends Component {
   }
 
   componentDidMount() {
-    console.log(
-      "props",
-      this.props.navigation.state.params.locationObj.location
-    );
     const {
       lat,
       lng

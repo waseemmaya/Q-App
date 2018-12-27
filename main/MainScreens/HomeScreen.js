@@ -6,10 +6,12 @@ import { Font, AppLoading } from "expo";
 import fire from "../config/fire";
 
 const APP_ID = "354264045362356";
+import { AsyncStorage } from "react-native";
 
 export default class HomeScreen extends React.Component {
   state = {
-    loaded: false
+    loaded: false,
+    uid: ""
   };
   render() {
     const { loaded } = this.state;
@@ -46,14 +48,17 @@ export default class HomeScreen extends React.Component {
             flex: 1
           }}
         >
-          <Button
-            styleName="secondary"
-            onPress={() => {
-              this.props.navigation.navigate("DomainScreen");
-            }}
-          >
+          <Button styleName="secondary" onPress={this.login}>
             <Icon name="facebook" />
             <Text style={{ fontSize: 19 }}>Login With Facebook</Text>
+          </Button>
+          <Button styleName="secondary" onPress={this._storeData}>
+            <Icon name="facebook" />
+            <Text style={{ fontSize: 19 }}>Save Data</Text>
+          </Button>
+          <Button styleName="secondary" onPress={this._removeData}>
+            <Icon name="facebook" />
+            <Text style={{ fontSize: 19 }}>Remove Data</Text>
           </Button>
         </View>
 
@@ -66,6 +71,43 @@ export default class HomeScreen extends React.Component {
     );
   }
 
+  _storeData = async uid => {
+    try {
+      await AsyncStorage.setItem("uid", uid).then(() => {
+        this.props.navigation.navigate("DomainScreen", uid);
+      });
+    } catch (error) {
+      // Error saving data
+    }
+  };
+
+  _retrieveData = async () => {
+    try {
+      const value = await AsyncStorage.getItem("uid");
+      if (value !== null) {
+        this.props.navigation.replace("MyCompanies", value);
+      } else {
+        console.log("no value found");
+      }
+    } catch (error) {
+      // Error retrieving data
+    }
+  };
+
+  _removeData = async () => {
+    try {
+      await AsyncStorage.removeItem("uid");
+    } catch (error) {
+      // Error retrieving data
+    }
+  };
+
+  componentDidMount() {
+    this._retrieveData();
+  }
+
+  checkUser = () => {};
+
   login = async () => {
     try {
       const {
@@ -75,12 +117,9 @@ export default class HomeScreen extends React.Component {
         permissions,
         declinedPermissions
       } = await Expo.Facebook.logInWithReadPermissionsAsync(APP_ID, {
-        permissions: ["public_profile", "user_gender", "user_photos"]
+        permissions: ["public_profile"]
       });
       if (type === "success") {
-        const response = await fetch(
-          `https://graph.facebook.com/me?access_token=${token}`
-        );
         fetch(`https://graph.facebook.com/me?access_token=${token}`)
           .then(res => res.json())
           .then(val => {
@@ -89,13 +128,17 @@ export default class HomeScreen extends React.Component {
               id: val.id
             };
 
-            let userRef2 = fire.database().ref(`QUsers/${val.id}`);
+            this.setState({
+              uid: val.id
+            });
+
+            let userRef2 = fire.database().ref(`Users/${val.id}`);
             userRef2.set(obj).then(() => {
-              this.props.navigation.navigate("DomainScreen");
+              this._storeData(this.state.uid);
             });
           });
 
-        // Alert.alert("Logged in!", `Hi ${(await response.json()).name}!`);
+        // Alert.alert("Logged isn!", `Hi ${(await response.json()).name}!`);
       } else {
       }
     } catch ({ message }) {

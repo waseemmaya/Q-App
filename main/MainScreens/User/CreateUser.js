@@ -1,6 +1,6 @@
 import React from "react";
 
-import { Text, Button, Icon, View, Title } from "@shoutem/ui";
+import { View, Title } from "@shoutem/ui";
 
 export default class CreateUser extends React.Component {
   render() {

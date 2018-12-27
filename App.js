@@ -1,12 +1,18 @@
 import { createStackNavigator, createAppContainer } from "react-navigation";
-import HomeScreen from "./main/Screens/HomeScreen";
-import DomainScreen from "./main/Screens/DomainScreen";
-import Companies from "./main/Screens/Companies";
-import CompanyDetail from "./main/Screens/CompanyDetail";
-import CreateCompany from "./main/Screens/Create/CreateCompany";
-import CreateUser from "./main/Screens/Create/CreateUser";
 import { Dimensions } from "react-native";
-import MapView from "./main/Screens/MapView";
+
+// Main Outside
+import HomeScreen from "./main/MainScreens/HomeScreen";
+import DomainScreen from "./main/MainScreens/DomainScreen";
+import MapView from "./main/MainScreens/MapView";
+
+// User
+import CreateUser from "./main/MainScreens/User/CreateUser";
+
+// Company
+import MyCompanies from "./main/MainScreens/Company/MyCompanies";
+import CompanyDetail from "./main/MainScreens/Company/CompanyDetail";
+import CreateCompany from "./main/MainScreens/Company/CreateCompany";
 
 const AppNavigator = createStackNavigator({
   Home: {
@@ -69,8 +75,8 @@ const AppNavigator = createStackNavigator({
       }
     })
   },
-  Companies: {
-    screen: Companies,
+  MyCompanies: {
+    screen: MyCompanies,
     navigationOptions: () => ({
       title: `Comapanies`,
       headerBackTitle: null,

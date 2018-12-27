@@ -17,10 +17,10 @@ import {
 import { StyleSheet } from "react-native";
 
 import { ImagePicker, Constants, Location, Permissions } from "expo";
-import AutoSuggest from "react-native-autosuggest";
 import Autocomplete from "react-native-autocomplete-input";
 
 import { ScrollView } from "react-native-gesture-handler";
+import moment from "moment";
 import AwesomeAlert from "react-native-awesome-alerts";
 
 import fire from "../../config/fire";
@@ -41,8 +41,8 @@ export default class CreateCompany extends React.Component {
       showAlert: false,
       downloadLinks: [],
       location: null,
-      lat: "24.8211186",
-      long: "67.1743231",
+      lat: "24.887389",
+      long: "67.068363",
       mainArr: [],
       selectedLocation: "",
       searchArr: [],
@@ -175,7 +175,6 @@ export default class CreateCompany extends React.Component {
   };
 
   selectLocation = selectedLocation => {
-    console.log("===========> selectedLocation >", selectedLocation);
     const { mainArr } = this.state;
     for (let i = 0; i < mainArr.length; i++) {
       if (mainArr[i].name === selectedLocation) {
@@ -197,10 +196,10 @@ export default class CreateCompany extends React.Component {
       mainArr: []
     });
 
-    const { searchArr, lat, long, mainArr } = this.state;
-    let Client_ID = "ES4PK425E5FW4JM5MKTCWBHL31XGER1LM5MMTOIQ3OQHW30F";
-    let Client_Secret = "3HSB3BMHL3FMOFB4BKNA4JA4JU3JO44WH5NMB5FBVM50S31L";
-    let url = `https://api.foursquare.com/v2/venues/search?ll=${lat},${long}&client_id=${Client_ID}&client_secret=${Client_Secret}&query=${searchKey}&limit=5&v=20181224`;
+    const { searchArr, mainArr } = this.state;
+    let url = `https://api.foursquare.com/v2/venues/search?client_id=ES4PK425E5FW4JM5MKTCWBHL31XGER1LM5MMTOIQ3OQHW30F&client_secret=3HSB3BMHL3FMOFB4BKNA4JA4JU3JO44WH5NMB5FBVM50S31L&query=${searchKey}&near=karachi&v=20181225&limit=5`;
+    console.log(url);
+
     fetch(url)
       .then(res => res.json())
       .then(val => {
@@ -220,26 +219,7 @@ export default class CreateCompany extends React.Component {
           }
           return;
         });
-
-        // console.log(searchArr);
       });
-  };
-
-  _getLocationAsync = async () => {
-    let { status } = await Permissions.askAsync(Permissions.LOCATION);
-    if (status !== "granted") {
-      this.setState({
-        errorMessage: "Permission to access location was denied"
-      });
-    }
-
-    let location = await Location.getCurrentPositionAsync({});
-    if (location) {
-      this.setState({
-        lat: location.coords.latitude,
-        long: location.coords.longitude
-      });
-    }
   };
 
   saveData = () => {
@@ -250,10 +230,14 @@ export default class CreateCompany extends React.Component {
       lat,
       long,
       locationObj,
+      uid,
       selectedLocation,
       endTime,
       downloadLinks
     } = this.state;
+
+    let createdAt = new Date();
+
     let obj = {
       name,
       since,
@@ -264,23 +248,28 @@ export default class CreateCompany extends React.Component {
       selectedLocation,
       startTime: startTime.brand,
       endTime: endTime.brand,
-      createdAt: new Date(),
+      momentDate: moment().format(),
+      createdAt: createdAt,
+      date: new Date().toLocaleString(),
+      estimatedTokenTime: "05",
       tokens: 0
     };
 
-    let comapnyRef = fire.database().ref("Comapnies");
+    let comapnyRef = fire.database().ref(`Comapnies/${uid}`);
     comapnyRef
       .push()
       .set(obj)
       .then(() => {
         console.log("pushed");
-        this.props.navigation.navigate("Companies");
+        this.props.navigation.navigate("MyCompanies");
+        this.setState({
+          showAlert: false
+        });
       })
       .catch(err => {
         this.setState({
           showAlert: false
         });
-        console.log("SaveData Error <======");
       });
   };
 
@@ -341,7 +330,6 @@ export default class CreateCompany extends React.Component {
     const ref = fire.storage().ref(`Pics/${filename}`);
     const snapshot = await ref.put(blob);
 
-    // We're done with the blob, close and release it
     blob.close();
 
     return await snapshot.ref.getDownloadURL().then(downloadURL => {
@@ -357,7 +345,10 @@ export default class CreateCompany extends React.Component {
   };
 
   componentDidMount() {
-    this._getLocationAsync();
+    let uid = this.props.navigation.state.params;
+    this.setState({
+      uid: uid
+    });
     this.makeList();
   }
 
@@ -507,14 +498,10 @@ export default class CreateCompany extends React.Component {
   };
 
   selectUri1 = async () => {
-    console.log("haha");
-
     let result = await ImagePicker.launchImageLibraryAsync({
       allowsEditing: true,
       aspect: [4, 3]
     });
-
-    console.log(result);
 
     if (!result.cancelled) {
       this.setState({ uri1: result.uri });
@@ -527,8 +514,6 @@ export default class CreateCompany extends React.Component {
       aspect: [4, 3]
     });
 
-    console.log(result);
-
     if (!result.cancelled) {
       this.setState({ uri2: result.uri });
     }
@@ -539,8 +524,6 @@ export default class CreateCompany extends React.Component {
       allowsEditing: true,
       aspect: [4, 3]
     });
-
-    console.log(result);
 
     if (!result.cancelled) {
       this.setState({ uri3: result.uri });

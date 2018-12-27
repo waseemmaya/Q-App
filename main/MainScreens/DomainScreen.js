@@ -34,7 +34,7 @@ export default class DomainScreen extends Component {
           <Button
             styleName="secondary"
             onPress={() => {
-              this.props.navigation.navigate("Companies");
+              this.props.navigation.navigate("MyCompanies");
             }}
           >
             <Icon name="web" />
@@ -62,7 +62,9 @@ export default class DomainScreen extends Component {
   }
 
   gotoCreateCompany = () => {
-    this.props.navigation.navigate("CreateCompany");
+    console.log(this.props.navigation.state.params);
+    
+    this.props.navigation.navigate("CreateCompany",this.props.navigation.state.params);
   };
 
   gotoCreateUser = () => {
